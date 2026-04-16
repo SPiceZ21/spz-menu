@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SpzPanel } from '../components/SpzPanel';
+import { isMockEnv } from '../mockData';
 
 export const CharacterCreation: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,7 +22,7 @@ export const CharacterCreation: React.FC = () => {
     window.addEventListener('message', handleMessage);
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'F9') setIsOpen(prev => !prev);
+      if (e.key === '7') setIsOpen(prev => !prev);
     };
     window.addEventListener('keydown', handleKeyDown);
 
@@ -34,13 +35,15 @@ export const CharacterCreation: React.FC = () => {
   const handleGenderSelect = async (selected: 'mp_m_freemode' | 'mp_f_freemode') => {
     setGender(selected);
     setError("");
-    try {
-      await fetch(`https://spz-races/previewGender`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gender: selected })
-      });
-    } catch {}
+    if (!isMockEnv) {
+      try {
+        await fetch(`https://spz-races/previewGender`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ gender: selected })
+        });
+      } catch {}
+    }
   };
 
   const handleSubmit = async () => {
@@ -54,18 +57,16 @@ export const CharacterCreation: React.FC = () => {
       return;
     }
 
-    try {
-      await fetch(`https://spz-races/createCharacter`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: cleanName, gender })
-      });
-      setIsOpen(false);
-    } catch {
-      // Dev mode fallback
-      console.log(`Submitted: ${cleanName} as ${gender}`);
-      setIsOpen(false);
+    if (!isMockEnv) {
+      try {
+        await fetch(`https://spz-races/createCharacter`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: cleanName, gender })
+        });
+      } catch {}
     }
+    setIsOpen(false);
   };
 
   if (!isOpen) return null;

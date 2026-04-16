@@ -10,8 +10,9 @@
   --spz-blue:    #185FA5;
 }
 
-@font-face { font-family:'SPZ'; src:url('./fonts/YOUR_BOLD.woff2'); font-weight:700; }
-@font-face { font-family:'SPZ'; src:url('./fonts/YOUR_REG.woff2');  font-weight:400; }
+/* Place actual font files in ui/public/fonts/ and uncomment below */
+/* @font-face { font-family:'SPZ'; src:url('/fonts/YOUR_BOLD.woff2'); font-weight:700; } */
+/* @font-face { font-family:'SPZ'; src:url('/fonts/YOUR_REG.woff2');  font-weight:400; } */
 
 body {
   margin: 0;

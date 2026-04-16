@@ -11,7 +11,7 @@ export const ProfileCard: React.FC = () => {
     };
     window.addEventListener('message', handleMessage);
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'F6') setIsOpen(prev => !prev);
+      if (e.key === '6') setIsOpen(prev => !prev);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => {

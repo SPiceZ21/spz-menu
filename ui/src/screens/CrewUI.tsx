@@ -45,8 +45,8 @@ export const CrewUI: React.FC = () => {
     window.addEventListener('message', handleMessage);
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'F10') setIsOpen(prev => !prev);
-      if (e.key === 'F11') setInCrew(prev => !prev); // Dev toggle for IN CREW
+      if (e.key === '3') setIsOpen(prev => !prev);
+      if (e.key === '4') setInCrew(prev => !prev); // Dev toggle for IN CREW
     };
     window.addEventListener('keydown', handleKeyDown);
 
@@ -57,15 +57,17 @@ export const CrewUI: React.FC = () => {
   }, []);
 
   const handleCreateCrew = async () => {
-    try {
-      await fetch(`https://spz-races/createCrew`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: createName, tag: createTag })
-      });
-      // Mock immediately switching states for dev testing
-      setInCrew(true);
-    } catch {}
+    if (!isMockEnv) {
+      try {
+        await fetch(`https://spz-races/createCrew`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: createName, tag: createTag })
+        });
+      } catch {}
+    }
+    // Mock immediately switching states for dev testing
+    setInCrew(true);
   };
 
   const handleLeaveCrew = async () => {
@@ -74,20 +76,24 @@ export const CrewUI: React.FC = () => {
       return;
     }
     
-    try {
-      await fetch(`https://spz-races/leaveCrew`, { method: 'POST' });
-      setConfirmLeave(false);
-      setInCrew(false);
-    } catch {}
+    if (!isMockEnv) {
+      try {
+        await fetch(`https://spz-races/leaveCrew`, { method: 'POST' });
+      } catch {}
+    }
+    setConfirmLeave(false);
+    setInCrew(false);
   };
 
   const handleSearch = async () => {
-    try {
-      await fetch(`https://spz-races/searchCrew`, { 
-        method: 'POST',
-        body: JSON.stringify({ query: searchQuery })
-      });
-    } catch {}
+    if (!isMockEnv) {
+      try {
+        await fetch(`https://spz-races/searchCrew`, { 
+          method: 'POST',
+          body: JSON.stringify({ query: searchQuery })
+        });
+      } catch {}
+    }
   };
 
   if (!isOpen) return null;

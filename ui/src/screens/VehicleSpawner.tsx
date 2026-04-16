@@ -63,7 +63,7 @@ export const VehicleSpawner: React.FC = () => {
 
     // Development hotkey test
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'F8') setIsOpen(prev => !prev);
+      if (e.key === '2') setIsOpen(prev => !prev);
     };
     window.addEventListener('keydown', handleKeyDown);
 
@@ -74,14 +74,15 @@ export const VehicleSpawner: React.FC = () => {
   }, []);
 
   const handleSpawn = async (model: string) => {
-    try {
-      await fetch(`https://spz-races/triggerSpawn`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model })
-      });
-    } catch {
-      // Dev env
+    if (!isMockEnv) {
+      try {
+        await fetch(`https://spz-races/spawnVehicle`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model })
+        });
+      } catch {}
+    } else {
       console.log(`[Dev] spawning ${model}`);
     }
     setIsOpen(false);

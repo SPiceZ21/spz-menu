@@ -29,7 +29,7 @@ export const NotificationManager: React.FC = () => {
     
     // Dev hotkey mock
     const keyHandler = (e: KeyboardEvent) => {
-      if (e.key === 'F12') {
+      if (e.key === '8') {
          const newNotif: NotificationPayload = {
            id: idCounter++,
            type: 'rankup',

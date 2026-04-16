@@ -41,12 +41,27 @@ export const QueueWidget: React.FC = () => {
     };
     
     window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '9') {
+        setData(prev => ({
+          ...prev,
+          state: prev.state === 'idle' ? 'queued' : prev.state === 'queued' ? 'post-race' : 'idle'
+        }));
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   // Poll for queue update
   useEffect(() => {
     const fetchQueueData = async () => {
+      if (isMockEnv) return; // Prevent spamming console with net::ERR_NAME_NOT_RESOLVED during web dev
       try {
         const response = await fetch(`https://spz-races/getQueueInfo`, {
           method: 'POST',

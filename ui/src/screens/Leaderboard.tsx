@@ -13,7 +13,7 @@ export const Leaderboard: React.FC = () => {
     };
     window.addEventListener('message', handleMessage);
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'F7') setIsOpen(prev => !prev);
+      if (e.key === '5') setIsOpen(prev => !prev);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => { window.removeEventListener('message', handleMessage); window.removeEventListener('keydown', handleKeyDown); };
