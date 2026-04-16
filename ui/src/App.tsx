@@ -23,8 +23,8 @@ function App() {
     window.addEventListener('message', handleMessage);
 
     const keyHandler = (e: KeyboardEvent) => {
-      // Dev Hotkey: F1 cycles through the GameStates (FREEROAM -> QUEUED -> RACING)
-      if (e.key === 'F1') {
+      // Dev Hotkey: F2 cycles through the GameStates (FREEROAM -> QUEUED -> RACING)
+      if (e.key === 'F2') {
         setGameState(prev => prev === 'FREEROAM' ? 'QUEUED' : prev === 'QUEUED' ? 'RACING' : 'FREEROAM');
       }
     };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SpzPanel } from '../components/SpzPanel';
+import { isMockEnv, mockQueueData } from '../mockData';
 
 type QueueState = 'idle' | 'queued' | 'post-race';
 
@@ -16,16 +17,16 @@ interface QueueData {
 }
 
 export const QueueWidget: React.FC = () => {
-  const [data, setData] = useState<QueueData>({
+  const [data, setData] = useState<QueueData>(isMockEnv ? mockQueueData : {
     state: 'idle',
     pollOpen: false,
-    queueCount: 14,
-    trackType: 'CIRCUIT',
-    playersCount: 14,
-    pollTimeLeft: '0:28',
-    lastPosition: 'P2',
-    ptsGained: 18,
-    refreshInterval: 5000, // Config.QueueRefreshInterval default equivalent
+    queueCount: 0,
+    trackType: '',
+    playersCount: 0,
+    pollTimeLeft: '',
+    lastPosition: '',
+    ptsGained: 0,
+    refreshInterval: 5000,
   });
 
   // Handle NUI Events for external states like poll opening/closing or configuration updates

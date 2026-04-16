@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SpzPanel } from '../components/SpzPanel';
+import { isMockEnv, mockCrewData } from '../mockData';
 
 interface CrewMember {
   name: string;
@@ -29,18 +30,8 @@ export const CrewUI: React.FC = () => {
   const [confirmLeave, setConfirmLeave] = useState(false);
 
   // Mock Data
-  const crew: CrewData = {
-    inCrew: inCrew,
-    name: "STREET PHANTOMS",
-    tag: "SPZ",
-    owner: "THESPZ_MASTER#2106",
-    membersOnline: 3,
-    membersTotal: 7,
-    members: [
-      { name: "THESPZ_MASTER#2106", classRank: "S-1", rating: "4.15", status: "★", isOwner: true },
-      { name: "RACESTONE#4421", classRank: "B-3", rating: "3.20", status: "ONLINE" },
-      { name: "NIGHTRIDER#0092", classRank: "A-2", rating: "2.88", status: "ONLINE" }
-    ]
+  const crew: CrewData = isMockEnv ? { ...mockCrewData, inCrew } : {
+    inCrew, name: "", tag: "", owner: "", membersOnline: 0, membersTotal: 0, members: []
   };
 
   useEffect(() => {

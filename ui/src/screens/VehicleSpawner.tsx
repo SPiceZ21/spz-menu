@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SpzPanel } from '../components/SpzPanel';
+import { isMockEnv, mockVehicleClasses } from '../mockData';
 
 interface Vehicle {
   model: string;
@@ -43,20 +44,8 @@ export const VehicleSpawner: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('c');
 
-  // Mock data matching the spec
-  const classes: VehicleClass[] = [
-    {
-      id: 'c', label: 'C STREET', locked: false, vehicles: [
-        { model: 'sultan', label: 'Sultan' },
-        { model: 'dominator', label: 'Dominator' },
-        { model: 'zr350', label: 'Annis ZR350' },
-        { model: 'dominator', label: 'Vapid Dominator' },
-      ]
-    },
-    { id: 'b', label: 'B SPORT', locked: false, vehicles: [] },
-    { id: 'a', label: 'A PRO \u00B7', locked: true, vehicles: [] },
-    { id: 's', label: 'S \u00B7', locked: true, vehicles: [] },
-  ];
+  // Mock data evaluation
+  const classes: VehicleClass[] = isMockEnv ? mockVehicleClasses : [];
 
   // Auto-open logic
   useEffect(() => {
