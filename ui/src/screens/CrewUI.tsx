@@ -36,9 +36,9 @@ export const CrewUI: React.FC = () => {
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      const { type, payload, data } = event.data;
+      const { type, data } = event.data;
       if (type === 'crewManagement' || (type === 'OPEN_MENU' && data?.name === 'crewManagement')) {
-        // payload handling could go here
+        // Handle payload if needed here
         setIsOpen(true);
       }
     };
