@@ -37,3 +37,18 @@ RegisterNUICallback("closeAll", function(data, cb)
   SetNuiFocus(false, false)
   if cb then cb("ok") end
 end)
+
+RegisterNUICallback("getQueueInfo", function(data, cb)
+  local playerState = SPZ_STATE and SPZ_STATE.State or "FREEROAM"
+  cb({
+    state           = playerState == "QUEUED" and "queued" or playerState == "RACING" and "racing" or "idle",
+    pollOpen        = false,
+    queueCount      = 0,
+    trackType       = "",
+    playersCount    = 0,
+    pollTimeLeft    = "",
+    lastPosition    = "",
+    ptsGained       = 0,
+    refreshInterval = Config.QueueRefreshInterval or 5000,
+  })
+end)

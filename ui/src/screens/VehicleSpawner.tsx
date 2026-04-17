@@ -40,20 +40,34 @@ function VehicleRow({ vehicle, onSpawn }: Props) {
   )
 }
 
+const CLASS_LABELS = ['C', 'B', 'A', 'S'];
+
+function buildClassList(serverData: Record<string, any[]>): VehicleClass[] {
+  return CLASS_LABELS.map((label, i) => {
+    const raw = serverData[String(i)] || [];
+    return {
+      id: label.toLowerCase(),
+      label,
+      locked: raw.length === 0,
+      vehicles: raw.map((v: any) => ({ model: v.model, label: v.label || v.model })),
+    };
+  });
+}
+
 export const VehicleSpawner: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('c');
+  const [classes, setClasses] = useState<VehicleClass[]>(isMockEnv ? mockVehicleClasses : []);
 
-  // Mock data evaluation
-  const classes: VehicleClass[] = isMockEnv ? mockVehicleClasses : [];
-
-  // Auto-open logic
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      const { type } = event.data;
+      const { type, payload } = event.data;
       if (type === 'SPZ:identityReady') {
         setTimeout(() => setIsOpen(true), 800);
       } else if (type === 'SPZ:openSpawner') {
+        if (payload?.classes) {
+          setClasses(buildClassList(payload.classes));
+        }
         setIsOpen(true);
       } else if (type === 'SPZ:closeSpawner') {
         setIsOpen(false);
@@ -61,7 +75,6 @@ export const VehicleSpawner: React.FC = () => {
     };
     window.addEventListener('message', handleMessage);
 
-    // Development hotkey test
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === '2') setIsOpen(prev => !prev);
     };
@@ -76,7 +89,7 @@ export const VehicleSpawner: React.FC = () => {
   const handleSpawn = async (model: string) => {
     if (!isMockEnv) {
       try {
-        await fetch(`https://spz-races/spawnVehicle`, {
+        await fetch(`https://spz-menu/spawnVehicle`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ model })
@@ -95,7 +108,7 @@ export const VehicleSpawner: React.FC = () => {
   return (
     <div style={{
       position: 'absolute',
-      bottom: '120px', // above queue widget
+      bottom: '120px',
       left: '50%',
       transform: 'translateX(-50%)',
       width: 380,

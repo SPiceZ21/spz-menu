@@ -6,7 +6,7 @@ export const CharacterCreation: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [suggestedUsername, setSuggestedUsername] = useState("racer");
   const [username, setUsername] = useState("");
-  const [gender, setGender] = useState<'mp_m_freemode' | 'mp_f_freemode' | null>(null);
+  const [gender, setGender] = useState<'mp_m_freemode_01' | 'mp_f_freemode_01' | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -32,12 +32,12 @@ export const CharacterCreation: React.FC = () => {
     };
   }, []);
 
-  const handleGenderSelect = async (selected: 'mp_m_freemode' | 'mp_f_freemode') => {
+  const handleGenderSelect = async (selected: 'mp_m_freemode_01' | 'mp_f_freemode_01') => {
     setGender(selected);
     setError("");
     if (!isMockEnv) {
       try {
-        await fetch(`https://spz-races/previewGender`, {
+        await fetch(`https://spz-menu/previewGender`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ gender: selected })
@@ -59,7 +59,7 @@ export const CharacterCreation: React.FC = () => {
 
     if (!isMockEnv) {
       try {
-        await fetch(`https://spz-races/createCharacter`, {
+        await fetch(`https://spz-menu/createCharacter`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: cleanName, gender })
@@ -95,20 +95,20 @@ export const CharacterCreation: React.FC = () => {
            style={{ 
              width: 200, height: 160, cursor: 'pointer',
              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-             borderBottom: gender === 'mp_m_freemode' ? '2px solid var(--spz-orange)' : '2px solid transparent',
+             borderBottom: gender === 'mp_m_freemode_01' ? '2px solid var(--spz-orange)' : '2px solid transparent',
              transition: 'border-bottom 0.2s ease',
              boxSizing: 'border-box'
            }}
-           onClick={() => handleGenderSelect('mp_m_freemode')}
+           onClick={() => handleGenderSelect('mp_m_freemode_01')}
         >
           <div className="spz-value" style={{ fontSize: 18, marginBottom: 6 }}>MALE</div>
           <div className="spz-label" style={{ textTransform: 'none' }}>mp_m_freemode</div>
           <div className="qw-btn qw-btn-leave" style={{ 
             marginTop: 20, height: 28, padding: '0 16px', lineHeight: '28px', 
-            color: gender === 'mp_m_freemode' ? 'var(--spz-orange)' : '#fff',
+            color: gender === 'mp_m_freemode_01' ? 'var(--spz-orange)' : '#fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
-             {gender === 'mp_m_freemode' ? 'SELECTED' : 'SELECT'}
+             {gender === 'mp_m_freemode_01' ? 'SELECTED' : 'SELECT'}
           </div>
         </SpzPanel>
 
@@ -116,20 +116,20 @@ export const CharacterCreation: React.FC = () => {
            style={{ 
              width: 200, height: 160, cursor: 'pointer',
              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-             borderBottom: gender === 'mp_f_freemode' ? '2px solid var(--spz-orange)' : '2px solid transparent',
+             borderBottom: gender === 'mp_f_freemode_01' ? '2px solid var(--spz-orange)' : '2px solid transparent',
              transition: 'border-bottom 0.2s ease',
              boxSizing: 'border-box'
            }}
-           onClick={() => handleGenderSelect('mp_f_freemode')}
+           onClick={() => handleGenderSelect('mp_f_freemode_01')}
         >
           <div className="spz-value" style={{ fontSize: 18, marginBottom: 6 }}>FEMALE</div>
           <div className="spz-label" style={{ textTransform: 'none' }}>mp_f_freemode</div>
           <div className="qw-btn qw-btn-leave" style={{ 
             marginTop: 20, height: 28, padding: '0 16px', lineHeight: '28px', 
-            color: gender === 'mp_f_freemode' ? 'var(--spz-orange)' : '#fff',
+            color: gender === 'mp_f_freemode_01' ? 'var(--spz-orange)' : '#fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
-             {gender === 'mp_f_freemode' ? 'SELECTED' : 'SELECT'}
+             {gender === 'mp_f_freemode_01' ? 'SELECTED' : 'SELECT'}
           </div>
         </SpzPanel>
       </div>

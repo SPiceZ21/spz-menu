@@ -63,7 +63,7 @@ export const QueueWidget: React.FC = () => {
     const fetchQueueData = async () => {
       if (isMockEnv) return; // Prevent spamming console with net::ERR_NAME_NOT_RESOLVED during web dev
       try {
-        const response = await fetch(`https://spz-races/getQueueInfo`, {
+        const response = await fetch(`https://spz-menu/getQueueInfo`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({})
@@ -110,7 +110,7 @@ export const QueueWidget: React.FC = () => {
   const handleAction = async () => {
     const endpoint = data.state === 'queued' ? 'leaveQueue' : 'joinQueue';
     try {
-      await fetch(`https://spz-races/${endpoint}`, {
+      await fetch(`https://spz-menu/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})

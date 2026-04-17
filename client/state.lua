@@ -17,9 +17,14 @@ AddEventHandler("SPZ:raceStateChanged", function(stateData)
 end)
 
 AddEventHandler("SPZ:identityReady", function()
-  if Config.AutoOpenSpawner then
-    SendNUIMessage({ type = "SPZ:openSpawner" })
-  end
+  TriggerServerEvent("SPZ:requestVehicleList")
+end)
+
+RegisterNetEvent("SPZ:vehicleListReady", function(classList)
+  SendNUIMessage({
+    type = "SPZ:openSpawner",
+    payload = { classes = classList }
+  })
 end)
 
 AddEventHandler("SPZ:rankChanged", function(data)
