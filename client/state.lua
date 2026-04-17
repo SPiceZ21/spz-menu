@@ -27,6 +27,21 @@ RegisterNetEvent("SPZ:vehicleListReady", function(classList)
   })
 end)
 
+-- Live queue count pushed from server whenever someone joins or leaves
+RegisterNetEvent("SPZ:queueUpdated", function(data)
+  local widgetState = "idle"
+  if SPZ_STATE.State == "QUEUED" then widgetState = "queued" end
+  SendNUIMessage({
+    type = "SPZ_QUEUE_INIT",
+    payload = {
+      state      = widgetState,
+      queueCount = data.count or 0,
+      trackType  = data.raceType or "",
+      pollOpen   = data.raceState == "POLLING",
+    }
+  })
+end)
+
 AddEventHandler("SPZ:rankChanged", function(data)
   SendNUIMessage({
     type = "notify",

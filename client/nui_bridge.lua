@@ -38,14 +38,28 @@ RegisterNUICallback("closeAll", function(data, cb)
   if cb then cb("ok") end
 end)
 
+-- Cached queue state pushed from server via SPZ:queueUpdated
+local _cachedQueue = { count = 0, raceType = "", raceState = "IDLE" }
+
+RegisterNetEvent("SPZ:queueUpdated_cache", function(data)
+  _cachedQueue = data
+end)
+
+AddEventHandler("SPZ:queueUpdated", function(data)
+  _cachedQueue = data
+end)
+
 RegisterNUICallback("getQueueInfo", function(data, cb)
   local playerState = SPZ_STATE and SPZ_STATE.State or "FREEROAM"
+  local widgetState = playerState == "QUEUED" and "queued"
+                   or playerState == "RACING"  and "racing"
+                   or "idle"
   cb({
-    state           = playerState == "QUEUED" and "queued" or playerState == "RACING" and "racing" or "idle",
-    pollOpen        = false,
-    queueCount      = 0,
-    trackType       = "",
-    playersCount    = 0,
+    state           = widgetState,
+    pollOpen        = _cachedQueue.raceState == "POLLING",
+    queueCount      = _cachedQueue.count or 0,
+    trackType       = _cachedQueue.raceType or "",
+    playersCount    = _cachedQueue.count or 0,
     pollTimeLeft    = "",
     lastPosition    = "",
     ptsGained       = 0,
