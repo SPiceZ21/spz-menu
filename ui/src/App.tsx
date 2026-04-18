@@ -19,10 +19,31 @@ function App() {
       if (type === 'SPZ_UPDATE_STATE') {
         setGameState(payload.state as GameState);
       }
+      // Global close — Lua-side triggered via main.lua:CloseAll()
+      if (type === 'CLOSE_ALL') {
+        // Each screen handles its own close via CLOSE_SCREEN or internally,
+        // but this is a safety net — broadcast close to all screens
+        window.dispatchEvent(new MessageEvent('message', {
+          data: { type: 'CLOSE_SCREEN', data: { name: 'spawner' } }
+        }));
+        window.dispatchEvent(new MessageEvent('message', {
+          data: { type: 'CLOSE_SCREEN', data: { name: 'leaderboard' } }
+        }));
+        window.dispatchEvent(new MessageEvent('message', {
+          data: { type: 'CLOSE_SCREEN', data: { name: 'profile' } }
+        }));
+        window.dispatchEvent(new MessageEvent('message', {
+          data: { type: 'CLOSE_SCREEN', data: { name: 'crewManagement' } }
+        }));
+      }
     };
     window.addEventListener('message', handleMessage);
 
     const keyHandler = (e: KeyboardEvent) => {
+      // Escape key → tell Lua to release NUI focus
+      if (e.key === 'Escape') {
+        fetch('https://spz-menu/closeAll', { method: 'POST', body: '{}' }).catch(() => {});
+      }
       // Dev Hotkey: 1 cycles through the GameStates (FREEROAM -> QUEUED -> RACING)
       if (e.key === '1') {
         setGameState(prev => prev === 'FREEROAM' ? 'QUEUED' : prev === 'QUEUED' ? 'RACING' : 'FREEROAM');

@@ -10,6 +10,7 @@ export const Leaderboard: React.FC = () => {
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
       if (e.data?.type === 'OPEN_MENU' && e.data?.data?.name === 'leaderboard') setIsOpen(true);
+      if (e.data?.type === 'CLOSE_SCREEN' && e.data?.data?.name === 'leaderboard') setIsOpen(false);
     };
     window.addEventListener('message', handleMessage);
     const handleKeyDown = (e: KeyboardEvent) => {

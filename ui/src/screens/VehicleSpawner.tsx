@@ -61,15 +61,15 @@ export const VehicleSpawner: React.FC = () => {
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      const { type, payload } = event.data;
+      const { type, payload, data } = event.data;
       if (type === 'SPZ:identityReady') {
         setTimeout(() => setIsOpen(true), 800);
-      } else if (type === 'SPZ:openSpawner') {
+      } else if (type === 'SPZ:openSpawner' || (type === 'OPEN_MENU' && data?.name === 'spawner')) {
         if (payload?.classes) {
           setClasses(buildClassList(payload.classes));
         }
         setIsOpen(true);
-      } else if (type === 'SPZ:closeSpawner') {
+      } else if (type === 'SPZ:closeSpawner' || (type === 'CLOSE_SCREEN' && data?.name === 'spawner')) {
         setIsOpen(false);
       }
     };

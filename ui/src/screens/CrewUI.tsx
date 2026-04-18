@@ -40,6 +40,8 @@ export const CrewUI: React.FC = () => {
       if (type === 'crewManagement' || (type === 'OPEN_MENU' && data?.name === 'crewManagement')) {
         // Handle payload if needed here
         setIsOpen(true);
+      } else if (type === 'CLOSE_SCREEN' && data?.name === 'crewManagement') {
+        setIsOpen(false);
       }
     };
     window.addEventListener('message', handleMessage);
