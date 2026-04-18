@@ -4,6 +4,7 @@
 
 -- ── Track which screen is currently open ──────────────────────────────────
 local _activeScreen = nil
+local _pollOpen     = false
 
 --- Open a named screen (spawner, leaderboard, profile, crewManagement)
 local function OpenScreen(name, payload)
@@ -23,12 +24,33 @@ local function CloseAll()
     end
     _activeScreen = nil
     SendNUIMessage({ type = "CLOSE_ALL" })
-    SetNuiFocus(false, false)
+    -- Keep focus alive if the poll is open (same NUI window)
+    if not _pollOpen then
+        SetNuiFocus(false, false)
+    end
 end
 
 -- ── NUI callback: UI requested close (Escape key, close button, etc.) ─────
 RegisterNUICallback("closeAll", function(_, cb)
     CloseAll()
+    if cb then cb("ok") end
+end)
+
+-- ── Play menu — shown after loading screen, before first spawn ────────────
+RegisterNetEvent("SPZ:showPlayMenu")
+AddEventHandler("SPZ:showPlayMenu", function(data)
+    -- spz-core/client/spawn_manager.lua shuts down the loading screen in its
+    -- own listener for this same event. By the time we run here the screen
+    -- is already closed.
+    SendNUIMessage({ type = "SPZ_SHOW_PLAY_MENU", payload = data or {} })
+    SetNuiFocus(true, true)
+end)
+
+-- NUI callback: player pressed ENTER in the play menu
+RegisterNUICallback("requestSpawn", function(_, cb)
+    SendNUIMessage({ type = "SPZ_HIDE_PLAY_MENU" })
+    SetNuiFocus(false, false)
+    TriggerServerEvent("SPZ:requestSpawn")
     if cb then cb("ok") end
 end)
 
@@ -50,17 +72,52 @@ AddEventHandler("spz-lib:Notify", function(msg, msgType, duration)
     })
 end)
 
--- ── Poll notification ("Press E to vote") routed from spz-hud ─────────────
-RegisterNetEvent("SPZ:pollNotifyToMenu")
-AddEventHandler("SPZ:pollNotifyToMenu", function(data)
-    SendNUIMessage({
-        type    = "notify",
-        payload = {
-            type    = "info",
-            title   = data and data.title or "Race Poll",
-            message = data and data.message or "Press E to vote",
-        },
-    })
+-- ── Poll — rendered inside spz-menu NUI ──────────────────────────────────
+RegisterNetEvent("SPZ:pollOpen")
+AddEventHandler("SPZ:pollOpen", function(data)
+    _pollOpen = true
+    SendNUIMessage({ type = "SPZ_POLL_OPEN", payload = data })
+    SetNuiFocus(true, true)
+end)
+
+RegisterNetEvent("SPZ:pollResult")
+AddEventHandler("SPZ:pollResult", function(data)
+    SendNUIMessage({ type = "SPZ_POLL_RESULT", payload = data })
+    -- Auto-close focus after vehicle poll resolves (2.8 s matches React timeout)
+    if data and data.phase == "vehicle" then
+        Citizen.SetTimeout(2900, function()
+            _pollOpen = false
+            SendNUIMessage({ type = "SPZ_POLL_CLOSE" })
+            if not _activeScreen then
+                -- Restore cursor for freeroam/queued; race will override to false once LIVE fires
+                local state = SPZ_STATE and SPZ_STATE.State or "FREEROAM"
+                if state == "RACING" then
+                    SetNuiFocus(false, false)
+                else
+                    SetNuiFocus(true, false)
+                end
+            end
+        end)
+    end
+end)
+
+-- NUI callback: player voted
+-- Server handler expects { index = n }, so wrap the bare number in a table.
+RegisterNUICallback("pollVote", function(body, cb)
+    TriggerServerEvent("SPZ:pollVote", { index = body.index })
+    if cb then cb("ok") end
+end)
+
+-- ── Race state: close poll when race starts / resets ─────────────────────
+-- Note: do NOT change NUI focus here — spz_race:state_updated broadcasts to ALL
+-- clients on the server, including freeroam players who are not in the race.
+-- NUI focus for racing players is managed by SPZ:stateChanged (per-player).
+RegisterNetEvent("spz_race:state_updated")
+AddEventHandler("spz_race:state_updated", function(newState)
+    if newState == "IDLE" or newState == "COUNTDOWN" or newState == "LIVE" then
+        _pollOpen = false
+        SendNUIMessage({ type = "SPZ_POLL_CLOSE" })
+    end
 end)
 
 -- ── Escape key handling ───────────────────────────────────────────────────

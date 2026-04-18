@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { SpzPanel } from '../components/SpzPanel';
-import { isMockEnv, mockQueueData } from '../mockData';
+import './QueueWidget.css';
 
 type QueueState = 'idle' | 'queued' | 'post-race';
 
 interface QueueData {
   state: QueueState;
-  pollOpen: boolean;
   queueCount: number;
   trackType: string;
   playersCount: number;
@@ -16,130 +14,110 @@ interface QueueData {
   refreshInterval: number;
 }
 
-export const QueueWidget: React.FC = () => {
-  const [data, setData] = useState<QueueData>(isMockEnv ? mockQueueData : {
-    state: 'idle',
-    pollOpen: false,
-    queueCount: 0,
-    trackType: '',
-    playersCount: 0,
-    pollTimeLeft: '',
-    lastPosition: '',
-    ptsGained: 0,
-    refreshInterval: 5000,
-  });
+const isMockEnv = import.meta.env.DEV;
 
-  // Handle NUI Events for external states like poll opening/closing or configuration updates
+const defaultData: QueueData = {
+  state: 'idle',
+  queueCount: 0,
+  trackType: '',
+  playersCount: 0,
+  pollTimeLeft: '',
+  lastPosition: '',
+  ptsGained: 0,
+  refreshInterval: 5000,
+};
+
+export const QueueWidget: React.FC = () => {
+  const [data, setData] = useState<QueueData>(defaultData);
+  const [loading, setLoading] = useState(false);
+
+  // Listen for NUI messages
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      const { type, payload } = event.data;
-      if (type === 'SPZ_POLL_STATUS') {
-        setData(prev => ({ ...prev, pollOpen: payload.isOpen }));
-      } else if (type === 'SPZ_QUEUE_INIT') {
+    const handleMessage = (e: MessageEvent) => {
+      const { type, payload } = e.data;
+      if (type === 'SPZ_QUEUE_INIT' || type === 'SPZ_QUEUE_UPDATE') {
         setData(prev => ({ ...prev, ...payload }));
       }
     };
-    
     window.addEventListener('message', handleMessage);
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === '9') {
-        setData(prev => ({
-          ...prev,
-          state: prev.state === 'idle' ? 'queued' : prev.state === 'queued' ? 'post-race' : 'idle'
-        }));
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('message', handleMessage);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => window.removeEventListener('message', handleMessage);
   }, []);
 
-  // Poll for queue update
+  // Poll server for queue state
   useEffect(() => {
-    const fetchQueueData = async () => {
-      if (isMockEnv) return; // Prevent spamming console with net::ERR_NAME_NOT_RESOLVED during web dev
+    const fetchQueue = async () => {
+      if (isMockEnv) return;
       try {
-        const response = await fetch(`https://spz-menu/getQueueInfo`, {
+        const res = await fetch('https://spz-menu/getQueueInfo', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({})
+          body: '{}',
         });
-        if (response.ok) {
-          const result = await response.json();
+        if (res.ok) {
+          const result = await res.json();
           setData(prev => ({ ...prev, ...result }));
         }
-      } catch (error) {
-        // Ignored in browser dev environment
-      }
+      } catch { /* not in FiveM */ }
     };
-
-    // Initial fetch
-    fetchQueueData();
-
-    // Setup interval
-    const intervalId = setInterval(fetchQueueData, data.refreshInterval);
-    return () => clearInterval(intervalId);
-  }, [data.refreshInterval]); // Dependencies
-
-  const getLeftText = () => {
-    switch (data.state) {
-      case 'idle': return 'NEXT RACE';
-      case 'queued': return 'QUEUED';
-      case 'post-race': return 'NEXT RACE';
-      default: return 'NEXT RACE';
-    }
-  };
-
-  const renderInfo = () => {
-    switch (data.state) {
-      case 'idle':
-        return `${data.queueCount} IN QUEUE · ${data.trackType}`;
-      case 'queued':
-        return `${data.playersCount} PLAYERS · POLL IN ${data.pollTimeLeft} · ${data.trackType}`;
-      case 'post-race':
-        return `LAST: ${data.lastPosition} · +${data.ptsGained} PTS · ${data.queueCount} IN QUEUE`;
-      default:
-        return '';
-    }
-  };
+    fetchQueue();
+    const id = setInterval(fetchQueue, data.refreshInterval);
+    return () => clearInterval(id);
+  }, [data.refreshInterval]);
 
   const handleAction = async () => {
     const endpoint = data.state === 'queued' ? 'leaveQueue' : 'joinQueue';
+    setLoading(true);
+
+    // Optimistic update so the button feels instant
+    setData(prev => ({
+      ...prev,
+      state: prev.state === 'queued' ? 'idle' : 'queued',
+    }));
+
     try {
       await fetch(`https://spz-menu/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+        body: '{}',
       });
-      // In a real environment, you might update optimistic state here or refetch queue info immediately
-    } catch {
-      // Intentionally empty for non-FiveM environments
-    }
+    } catch { /* not in FiveM */ }
+
+    setLoading(false);
   };
 
+  const isQueued = data.state === 'queued';
+
+  const statusLabel = isQueued ? 'IN QUEUE' : data.state === 'post-race' ? 'LAST RACE' : 'FREEROAM';
+
+  const infoLine = isQueued
+    ? `${data.playersCount} PLAYERS${data.trackType ? ' · ' + data.trackType : ''}`
+    : data.state === 'post-race'
+      ? `P${data.lastPosition} · +${data.ptsGained} PTS · ${data.queueCount} IN QUEUE`
+      : data.queueCount > 0
+        ? `${data.queueCount} IN QUEUE${data.trackType ? ' · ' + data.trackType : ''}`
+        : 'JOIN THE NEXT RACE';
+
   return (
-    <div className={`queue-widget-container ${data.pollOpen ? 'poll-open' : ''}`}>
-      <SpzPanel className="queue-widget">
-        <div className="qw-left">
-          <div className="qw-left-text">{getLeftText()}</div>
+    <div className="qw-root">
+      <div className="qw-panel spz-panel">
+        {/* Orange accent pip */}
+        <div className="qw-status-dot" data-queued={isQueued} />
+
+        {/* Labels */}
+        <div className="qw-labels">
+          <span className="qw-status-label">{statusLabel}</span>
+          <span className="qw-info-line">{infoLine}</span>
         </div>
-        
-        <div className="qw-divider"></div>
-        
-        <div className="qw-right">
-          <div className="qw-info spz-label">{renderInfo()}</div>
-          
-          {data.state === 'idle' || data.state === 'post-race' ? (
-            <button className="qw-btn qw-btn-join" onClick={handleAction}>JOIN</button>
-          ) : (
-            <button className="qw-btn qw-btn-leave" onClick={handleAction}>LEAVE</button>
-          )}
-        </div>
-      </SpzPanel>
+
+        {/* Action button */}
+        <button
+          className={`qw-btn ${isQueued ? 'qw-btn-leave' : 'qw-btn-join'}`}
+          onClick={handleAction}
+          disabled={loading}
+        >
+          {isQueued ? 'LEAVE' : 'JOIN'}
+        </button>
+      </div>
     </div>
   );
 };

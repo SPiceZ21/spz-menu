@@ -1,140 +1,98 @@
+/* ── Fonts ────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Panchang';
+  src: url('/fonts/Panchang-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Panchang';
+  src: url('/fonts/Panchang-Extrabold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Panchang';
+  src: url('/fonts/Panchang-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Panchang';
+  src: url('/fonts/Panchang-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+/* ── Design Tokens ───────────────────────────────────────────────────────── */
 :root {
-  --spz-bg:      #1C1C1C;
-  --spz-bg-deep: #141414;
-  --spz-overlay: rgba(0,0,0,0.90);
+  --primary-orange:    #FF6200;
+  --secondary-orange:  #FF9F63;
+  --hud-bg:            rgba(8, 8, 10, 0.92);
+  --hud-bg-light:      rgba(18, 18, 22, 0.88);
+  --hud-glass:         rgba(0, 0, 0, 0.50);
+  --hud-border:        rgba(255, 255, 255, 0.08);
+  --hud-accent:        var(--primary-orange);
+  --hud-accent-glow:   rgba(255, 98, 0, 0.35);
+  --hud-muted:         rgba(255, 255, 255, 0.45);
+  --hud-dim:           rgba(255, 255, 255, 0.20);
+  --font-main:         'Panchang', sans-serif;
+  --font-speed:        'Panchang', sans-serif;
+
+  /* Legacy aliases kept for components that still reference them */
+  --spz-bg:      rgba(8, 8, 10, 0.92);
+  --spz-orange:  #FF6200;
   --spz-white:   #FFFFFF;
-  --spz-muted:   rgba(255,255,255,0.50);
-  --spz-dim:     rgba(255,255,255,0.22);
-  --spz-orange:  #FF6B00;
+  --spz-muted:   rgba(255, 255, 255, 0.45);
+  --spz-dim:     rgba(255, 255, 255, 0.20);
   --spz-red:     #CC2200;
   --spz-blue:    #185FA5;
 }
 
-/* Place actual font files in ui/public/fonts/ and uncomment below */
-/* @font-face { font-family:'SPZ'; src:url('/fonts/YOUR_BOLD.woff2'); font-weight:700; } */
-/* @font-face { font-family:'SPZ'; src:url('/fonts/YOUR_REG.woff2');  font-weight:400; } */
-
-body {
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+html, body {
   margin: 0;
   padding: 0;
-  font-family: 'SPZ', sans-serif;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
+  background: transparent !important;
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+  color: #fff;
 }
 
-.spz-value { font-family:'SPZ',sans-serif; font-weight:700; text-transform:uppercase; color:#fff; }
-.spz-label { font-family:'SPZ',sans-serif; font-weight:400; font-size:11px;
-             text-transform:uppercase; letter-spacing:.14em; color:var(--spz-muted); }
+* { box-sizing: border-box; }
 
+/* ── Utility classes ─────────────────────────────────────────────────────── */
+.spz-value {
+  font-family: var(--font-main);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.spz-label {
+  font-family: var(--font-main);
+  font-weight: 400;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--hud-muted);
+}
+
+/* ── Glass panel base ────────────────────────────────────────────────────── */
 .spz-panel {
-  background-color: var(--spz-bg);
-  background-image: repeating-linear-gradient(
-    -45deg, transparent, transparent 8px,
-    rgba(255,255,255,0.015) 8px, rgba(255,255,255,0.015) 9px
-  );
-  border-radius: 2px;
+  background: var(--hud-bg);
+  border: 1px solid var(--hud-border);
+  border-left: 3px solid var(--primary-orange);
+  border-radius: 6px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 28px rgba(0, 0, 0, 0.60);
 }
 
-/* Queue Widget Container */
-.queue-widget-container {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 0 40px 40px 40px;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  transition: opacity 0.3s ease;
-  pointer-events: none; /* Let clicks pass through background */
-}
-
-.queue-widget-container.poll-open {
-  opacity: 0.3;
-}
-
-/* Queue Widget */
-.queue-widget {
-  height: 52px;
-  width: 100%;
-  max-width: 1600px;
-  display: flex;
-  align-items: center;
-  pointer-events: auto; /* Active elements inside are clickable */
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-.queue-widget-container.poll-open .queue-widget {
-  pointer-events: none;
-}
-
-/* Left Block */
-.qw-left {
-  width: 160px;
-  padding-left: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.qw-left-text {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--spz-white);
-  text-transform: uppercase;
-  letter-spacing: .05em;
-}
-
-/* Divider */
-.qw-divider {
-  width: 1px;
-  height: 32px;
-  background-color: var(--spz-dim);
-  margin-right: 24px;
-}
-
-/* Right Block */
-.qw-right {
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-right: 12px;
-}
-
-.qw-info {
-  display: flex;
-  align-items: center;
-}
-
-/* Buttons */
-.qw-btn {
-  height: 36px;
-  padding: 0 24px;
-  border-radius: 2px;
-  border: none;
-  font-family: 'SPZ', sans-serif;
-  font-weight: 700;
-  font-size: 11px; /* explicitly 11px to match common SPZ label sizes */
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.qw-btn-join {
-  background-color: var(--spz-orange);
-  color: var(--spz-white);
-}
-
-.qw-btn-join:hover {
-  background-color: #e66000;
-}
-
-.qw-btn-leave {
-  background-color: rgba(255, 255, 255, 0.08);
-  color: var(--spz-white);
-}
-
-.qw-btn-leave:hover {
-  background-color: rgba(255, 255, 255, 0.12);
-}
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,98,0,0.4); border-radius: 2px; }

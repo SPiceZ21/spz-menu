@@ -1,0 +1,150 @@
+/* ── Vehicle Spawner — centre-bottom glass panel ─────────────────────────── */
+
+.vs-root {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+}
+
+.vs-panel {
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header */
+.vs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid var(--hud-border);
+}
+
+.vs-title {
+  font-family: var(--font-main);
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--primary-orange);
+}
+
+.vs-close {
+  background: none;
+  border: none;
+  color: var(--hud-muted);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: color 0.15s;
+}
+
+.vs-close:hover { color: #fff; }
+
+/* Tabs */
+.vs-tabs {
+  display: flex;
+  padding: 6px 8px 0;
+  gap: 2px;
+}
+
+.vs-tab {
+  flex: 1;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-main);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--hud-muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.vs-tab:hover:not(:disabled) { color: #fff; }
+
+.vs-tab-active {
+  color: var(--primary-orange) !important;
+  border-bottom-color: var(--primary-orange);
+}
+
+.vs-tab-locked {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+
+/* List */
+.vs-list {
+  max-height: 240px;
+  overflow-y: auto;
+  margin-top: 4px;
+}
+
+.vs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  height: 36px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.12s;
+}
+
+.vs-row:hover { background: rgba(255,98,0,0.04); }
+
+.vs-vehicle-name {
+  font-family: var(--font-main);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.80);
+}
+
+.vs-spawn-btn {
+  height: 22px;
+  padding: 0 10px;
+  background: var(--primary-orange);
+  border: none;
+  border-radius: 3px;
+  font-family: var(--font-main);
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.vs-spawn-btn:hover { opacity: 0.85; }
+
+.vs-empty {
+  padding: 20px;
+  text-align: center;
+  font-family: var(--font-main);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--hud-muted);
+}
+
+/* Footer */
+.vs-footer {
+  padding: 7px 14px;
+  font-family: var(--font-main);
+  font-weight: 400;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--hud-dim);
+  border-top: 1px solid var(--hud-border);
+}

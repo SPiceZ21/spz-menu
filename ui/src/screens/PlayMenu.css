@@ -1,0 +1,144 @@
+/* ── Play Menu — full-screen welcome overlay shown after loading screen ──── */
+
+.pm-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pm-fade-in 0.6s ease-out both;
+}
+
+@keyframes pm-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Dark glass backdrop */
+.pm-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 4, 6, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Centre card */
+.pm-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+/* Logo row */
+.pm-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.pm-logo-accent {
+  width: 40px;
+  height: 2px;
+  background: var(--primary-orange);
+  opacity: 0.7;
+}
+
+.pm-logo-text {
+  font-family: var(--font-main);
+  font-weight: 800;
+  font-size: 42px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: #fff;
+  line-height: 1;
+}
+
+.pm-logo-sub {
+  font-weight: 300;
+  font-size: 20px;
+  letter-spacing: 8px;
+  color: var(--primary-orange);
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* Identity pill */
+.pm-identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 3px solid var(--primary-orange);
+  border-radius: 6px;
+  padding: 10px 22px;
+}
+
+.pm-identity-name {
+  font-family: var(--font-main);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.90);
+}
+
+.pm-identity-rank {
+  font-family: var(--font-main);
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  color: var(--primary-orange);
+  border-left: 1px solid rgba(255, 98, 0, 0.30);
+  padding-left: 14px;
+}
+
+/* Enter button */
+.pm-enter-btn {
+  width: 220px;
+  height: 52px;
+  background: var(--primary-orange);
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-main);
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s, opacity 0.2s;
+  box-shadow: 0 0 30px rgba(255, 98, 0, 0.25);
+}
+
+.pm-enter-btn:hover:not(:disabled) {
+  background: var(--secondary-orange);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 30px rgba(255, 98, 0, 0.40);
+}
+
+.pm-enter-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.pm-enter-btn.pm-entering,
+.pm-enter-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Hint text */
+.pm-hint {
+  font-family: var(--font-main);
+  font-weight: 300;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.20);
+  margin: 0;
+}
