@@ -57,7 +57,7 @@ function App() {
   const showProfile  = gameState !== 'RACING';
 
   return (
-    <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       {/* Loading → world entry gate (highest z-index, self-hides after ENTER) */}
       <PlayMenu />
 
