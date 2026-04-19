@@ -65,6 +65,7 @@ export const QueueWidget: React.FC = () => {
   }, [data.refreshInterval]);
 
   const handleAction = async () => {
+    if (loading) return;
     const endpoint = data.state === 'queued' ? 'leaveQueue' : 'joinQueue';
     setLoading(true);
 
@@ -84,6 +85,18 @@ export const QueueWidget: React.FC = () => {
 
     setLoading(false);
   };
+
+  // E key shortcut — only when not in post-race state
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() !== 'e') return;
+      if (data.state === 'post-race') return;
+      handleAction();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.state, loading]);
 
   const isQueued = data.state === 'queued';
 
@@ -110,13 +123,16 @@ export const QueueWidget: React.FC = () => {
         </div>
 
         {/* Action button */}
-        <button
-          className={`qw-btn ${isQueued ? 'qw-btn-leave' : 'qw-btn-join'}`}
-          onClick={handleAction}
-          disabled={loading}
-        >
-          {isQueued ? 'LEAVE' : 'JOIN'}
-        </button>
+        {data.state !== 'post-race' && (
+          <button
+            className={`qw-btn ${isQueued ? 'qw-btn-leave' : 'qw-btn-join'}`}
+            onClick={handleAction}
+            disabled={loading}
+          >
+            <span className="qw-btn-key">[E]</span>
+            {isQueued ? 'LEAVE' : 'JOIN'}
+          </button>
+        )}
       </div>
     </div>
   );
