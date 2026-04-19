@@ -1,6 +1,17 @@
 if not Config then Config = { Keys = { Spawner = "F2", Leaderboard = "F3", Profile = "F4", Crew = "F5" } } end
 SPZ_STATE = SPZ_STATE or { State = "FREEROAM" } -- "FREEROAM", "QUEUED", "RACING"
 
+-- Queue join/leave — Lua-side so it works under SetNuiFocus(true, false)
+RegisterKeyMapping("spz_queue", "SPiceZ: Join / Leave Queue", "keyboard", "e")
+RegisterCommand("spz_queue", function()
+    local state = SPZ_STATE.State
+    if state == "FREEROAM" then
+        TriggerServerEvent("SPZ:joinQueue")
+    elseif state == "QUEUED" then
+        TriggerServerEvent("SPZ:leaveQueue")
+    end
+end, false)
+
 RegisterKeyMapping("spz_spawner", "SPiceZ: Vehicle spawner", "keyboard", Config.Keys.Spawner)
 RegisterCommand("spz_spawner", function()
   if SPZ_STATE.State == "FREEROAM" then

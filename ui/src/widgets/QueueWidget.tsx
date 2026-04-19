@@ -86,18 +86,6 @@ export const QueueWidget: React.FC = () => {
     setLoading(false);
   };
 
-  // E key shortcut — only when not in post-race state
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() !== 'e') return;
-      if (data.state === 'post-race') return;
-      handleAction();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.state, loading]);
-
   const isQueued = data.state === 'queued';
 
   const statusLabel = isQueued ? 'IN QUEUE' : data.state === 'post-race' ? 'LAST RACE' : 'FREEROAM';
